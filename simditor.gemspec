@@ -4,7 +4,7 @@ require 'simditor/version'
 
 Gem::Specification.new do |s|
   s.name          = "simditor"
-  s.version       = Simditor::VERSION::EDITOR
+  s.version       = Simditor::Version::EDITOR
   s.authors       = ["Wentao Liu"]
   s.email         = ["wentaoliu@live.com"]
   s.license       = 'MIT'
