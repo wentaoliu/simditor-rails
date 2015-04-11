@@ -17,3 +17,19 @@ in application.css
 ```
  *= require simditor
 ```
+
+## Initialization
+
+```coffeescript
+editor = new Simditor(
+  textarea: $('#editor')
+  toolbar: [
+    'title','bold','italic','underline','strikethrough','color','|'
+    'ol','ul','blockquote','code','table','link','image','hr','|'
+    'indent','outdent','|'
+    'source'
+  ]
+  pasteImage: true
+  defaultImage: '<%= image_path "upload-loading.png" %>'
+  upload: url: '/upload')
+```
