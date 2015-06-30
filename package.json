@@ -1,0 +1,11 @@
+{
+  "name": "simditor-rails",
+  "version": "2.1.14",
+  "description": "Rails assets wrapper for https://github.com/mycolorway/simditor",
+  "author": "Wentao Liu <wentaoliu@live.com>",
+  "repository": "https://github.com/wentaoliu/simditor-rails",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-copy": "~0.8.0"
+  }
+}
