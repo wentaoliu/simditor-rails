@@ -1,7 +1,7 @@
 /*!
-* Simditor v2.1.13
+* Simditor v2.1.15
 * http://simditor.tower.im/
-* 2015-06-23
+* 2015-07-01
 */
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -537,7 +537,7 @@ Formatter = (function(superClass) {
         continue;
       }
       if (ref1 = pair[0], indexOf.call(allowedStyles, ref1) >= 0) {
-        styles[$.trim(pair[0])] = $trim(pair[1]);
+        styles[$.trim(pair[0])] = $.trim(pair[1]);
       }
     }
     if (Object.keys(styles).length > 0) {
@@ -1784,7 +1784,7 @@ Util = (function(superClass) {
     mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
     if (hasBlobConstructor) {
       blobArray = hasArrayBufferViewSupport ? intArray : arrayBuffer;
-      return new Blob(blobArray, {
+      return new Blob([blobArray], {
         type: mimeString
       });
     }
