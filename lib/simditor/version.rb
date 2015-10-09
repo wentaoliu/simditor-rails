@@ -1,5 +1,5 @@
 module Simditor
   module Version
-    EDITOR = "2.2.4"
+    EDITOR = "2.3.0"
   end
 end
