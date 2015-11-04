@@ -1,5 +1,8 @@
 # simditor gem
+
 `simditor` gem is a Rails assets wrapper of [Simditor](https://github.com/mycolorway/simditor).
+
+[![Gem Version](https://badge.fury.io/rb/simditor.svg)](https://badge.fury.io/rb/simditor)
 
 ## Usage
 

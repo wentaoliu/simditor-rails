@@ -1,7 +1,7 @@
 /*!
-* Simditor v2.3.2
+* Simditor v2.3.3
 * http://simditor.tower.im/
-* 2015-10-15
+* 2015-10-20
 */
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -594,6 +594,9 @@ Formatter = (function(superClass) {
           blockNode = $('<p/>').insertBefore(node);
         }
         blockNode.append(node);
+        if (this.editor.util.isEmptyNode(blockNode)) {
+          blockNode.append(this.editor.util.phBr);
+        }
       }
     }
     return $el;
@@ -878,19 +881,12 @@ InputManager = (function(superClass) {
       })(this));
     }
     submitKey = this.editor.util.os.mac ? 'cmd+enter' : 'ctrl+enter';
-    this.editor.hotkeys.add(submitKey, (function(_this) {
+    return this.editor.hotkeys.add(submitKey, (function(_this) {
       return function(e) {
         _this.editor.el.closest('form').find('button:submit').click();
         return false;
       };
     })(this));
-    if (this.editor.textarea.attr('autofocus')) {
-      return setTimeout((function(_this) {
-        return function() {
-          return _this.editor.focus();
-        };
-      })(this), 0);
-    }
   };
 
   InputManager.prototype._onFocus = function(e) {
@@ -899,9 +895,20 @@ InputManager = (function(superClass) {
     }
     this.editor.el.addClass('focus').removeClass('error');
     this.focused = true;
-    this.lastCaretPosition = null;
     return setTimeout((function(_this) {
       return function() {
+        var $blockEl, range;
+        range = _this.editor.selection._selection.getRangeAt(0);
+        if (range.startContainer === _this.editor.body[0]) {
+          if (_this.lastCaretPosition) {
+            _this.editor.undoManager.caretPosition(_this.lastCaretPosition);
+          } else {
+            $blockEl = _this.body.children.first();
+            range = document.createRange();
+            _this.selection.setRangeAtStartOf($blockEl, range);
+          }
+        }
+        _this.lastCaretPosition = null;
         _this.editor.triggerHandler('focus');
         if (!_this.editor.util.support.onselectionchange) {
           return _this.throttledSelectionChanged();
@@ -1333,17 +1340,20 @@ UndoManager = (function(superClass) {
     })(this));
     this.editor.on('selectionchanged', (function(_this) {
       return function(e) {
-        _this._startPosition = null;
-        _this._endPosition = null;
+        _this.resetCaretPosition();
         return _this.update();
       };
     })(this));
     return this.editor.on('blur', (function(_this) {
       return function(e) {
-        _this._startPosition = null;
-        return _this._endPosition = null;
+        return _this.resetCaretPosition();
       };
     })(this));
+  };
+
+  UndoManager.prototype.resetCaretPosition = function() {
+    this._startPosition = null;
+    return this._endPosition = null;
   };
 
   UndoManager.prototype.startPosition = function() {
@@ -1547,7 +1557,11 @@ UndoManager = (function(superClass) {
         endOffset = caret.start[caret.start.length - 1];
       }
       if (!startContainer || !endContainer) {
-        throw new Error('simditor: invalid caret state');
+        if (typeof console !== "undefined" && console !== null) {
+          if (typeof console.warn === "function") {
+            console.warn('simditor: invalid caret state');
+          }
+        }
         return;
       }
       range = document.createRange();
@@ -2217,6 +2231,8 @@ Clipboard = (function(superClass) {
         _this.editor.inputManager.throttledValueChanged.clear();
         _this.editor.inputManager.throttledSelectionChanged.clear();
         _this.editor.undoManager.throttledPushState.clear();
+        _this.editor.selection.reset();
+        _this.editor.undoManager.resetCaretPosition();
         _this.pasting = true;
         return _this._getPasteContent(function(pasteContent) {
           _this._processPasteContent(pasteContent);
@@ -2476,7 +2492,10 @@ Simditor = (function(superClass) {
             return _this._placeholder();
           });
         }
-        return _this.setValue(_this.textarea.val().trim() || '');
+        _this.setValue(_this.textarea.val().trim() || '');
+        if (_this.textarea.attr('autofocus')) {
+          return _this.focus();
+        }
       };
     })(this));
     if (this.util.browser.mozilla) {
@@ -2582,15 +2601,15 @@ Simditor = (function(superClass) {
       return;
     }
     if (this.inputManager.lastCaretPosition) {
-      return this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
+      this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
+      return this.inputManager.lastCaretPosition = null;
     } else {
       $blockEl = this.body.children().last();
       if (!$blockEl.is('p')) {
         $blockEl = $('<p/>').append(this.util.phBr).appendTo(this.body);
       }
       range = document.createRange();
-      this.selection.setRangeAtEndOf($blockEl, range);
-      return this.body.focus();
+      return this.selection.setRangeAtEndOf($blockEl, range);
     }
   };
 
@@ -4227,15 +4246,15 @@ ImageButton = (function(superClass) {
           if ($mask) {
             $mask.remove();
           }
-          return $img.removeData('mask');
+          $img.removeData('mask');
+          _this.editor.trigger('valuechanged');
+          if (_this.editor.body.find('img.uploading').length < 1) {
+            return _this.editor.uploader.trigger('uploadready', [file, result]);
+          }
         });
         if (_this.popover.active) {
           _this.popover.srcEl.prop('disabled', false);
-          _this.popover.srcEl.val(result.file_path);
-        }
-        _this.editor.trigger('valuechanged');
-        if (_this.editor.body.find('img.uploading').length < 1) {
-          return _this.editor.uploader.trigger('uploadready', [file, result]);
+          return _this.popover.srcEl.val(result.file_path);
         }
       };
     })(this));
