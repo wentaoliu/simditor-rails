@@ -1,12 +1,12 @@
 {
   "name": "simditor-rails",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "homepage": "https://github.com/wentaoliu/simditor-rails",
   "authors": [
     "Wentao Liu <wentaoliu@live.com>"
   ],
   "description": "Rails assets wrapper for https://github.com/mycolorway/simditor",
   "dependencies": {
-    "simditor": "2.3.5"
+    "simditor": "2.3.6"
   }
 }
